@@ -68,7 +68,7 @@ def memegen(topString, bottomString, filename):
 def memegen_tg(bot, update, direct=True):
     bot.send_chat_action(update.message.chat_id, ChatAction.UPLOAD_PHOTO)
     file_id = update.message.photo[-1]
-    caption = update.message.caption.split(',')
+    caption = update.message.caption.split(',,')
     newImage = bot.get_file(file_id)
     newImage.download('./images/upload.png')
     memegen(caption[0],caption[1], "upload.png")
