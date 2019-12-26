@@ -23,19 +23,29 @@ will result in:
 
     Too lazy to upload a photo right now
 
+If the caption of the picture starts with "SAVE" it will save the image as template in the template folder and SQLite DB.
 
-Will implement new things in the future
+With "Meme [ls, curl, rm]" you can handle your meme templates with ease.
+ 
 
-Eventuall
+Will implement new things in the future...
+
+E
+v
+e
+n
+t
+u
+a
+l
+l
+y
+.
+.
+.
 
 
-
-
-
-
-
-
-
+<br><br><br><br><br><br><br>
 
 So long and thanks for all the code:
 

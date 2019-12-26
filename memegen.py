@@ -1,5 +1,4 @@
 from PIL import ImageFont, Image, ImageDraw
-
 import dbutils
 
 
@@ -39,8 +38,76 @@ def craft(topString, bottomString, filename):
 def saveTemplate(templateName, filename, user, dbfile):
     try:
         img = Image.open("./images/" + filename)
-        img.save("./images/templates/" + templateName + ".png")
-        dbutils.addMemeTemplate(img.filename, user)
-        return True
+        if img.save("./images/templates/" + templateName + ".png") and dbutils.addMemeTemplate(img.filename, user):
+            return True
+        else:
+            return False
     except Error as e:
         return False
+
+
+def listmemes(bot, update, dbfile):
+    bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+    try:
+        memes = dbutils.select("SELECT * FROM memes", dbfile)
+        nmemes = len(memes)
+        bot.sendMessage(chat_id=update.message.chat_id, text="There's {} memes saved, here's the list:".format(nmemes))
+        bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+        for mim in memes:
+            mylist = mim[0] + mim[1] + "\n"
+        bot.sendMessage(chat_id=update.message.chat_id, text="".format(mylist))
+    except Error as e:
+        print(e)
+        bot.sendMessage(chat_id=update.message.chat_id, text="".format(e))
+        return False
+
+
+def getmeme(bot, update, dbfile):
+    # Expecting string in the form: "Meme curl 1337"
+    memeid = update.message.text[10:]
+    try:
+        if memeid.isDigit():
+            query = "SELECT * FROM memes WHERE ID={};".format(memeid)
+            template = dbutils.selectOne(query, dbfile)
+            filename = 'images/templates/'+template[1]+'.png'
+            uploader = template[2]
+            date = template[3]
+            bot.send_photo(chat_id=update.message.chat_id, photo=open(filename, 'rb'), caption="\"filename\" by {}, ({})".format(uploader, date),
+                           parse_mode="Markdown")
+        else:
+            bot.sendMessage(chat_id=update.message.chat_id, text="ID requested is Alan")
+    except Error as e:
+        print(e)
+
+
+def rmmeme(bot, update, dbfile):
+    # Expecting string in the form: "Meme rm 1337"
+    memeid = update.message.text[8:]
+    try:
+        if memeid.isDigit():
+            query = "DELETE FROM memes WHERE ID={};".format(memeid)
+            if dbutils.exec(query, dbfile):
+                bot.sendMessage(chat_id=update.message.chat_id, text="Meme ID {} removed as requested by Alan.".format(memeid))
+        else:
+            bot.sendMessage(chat_id=update.message.chat_id, text="ID requested is Alan")
+    except Error as e:
+        print(e)
+
+
+def helpmeme(bot, update):
+    bot.sendMessage(chat_id=update.message.chat_id, text="Meme + [ls, curl, rm] + optional ID")
+
+
+def meme(bot, update, dbfile):
+    try:
+        memecmd = update.message.text()
+        if memecmd.startswith("Meme ls"):
+            listmemes(bot, update, dbfile)
+        elif memecmd.startswith("Meme wget ") or memecmd.startswith("Meme curl "):
+            getmeme(bot, update, dbfile)
+        elif memecmd.startswith("Meme rm "):
+            rmmeme(bot, update, dbfile)
+        else:
+            helpmeme(bot, update, )
+    except Error as e:
+        print(e)

@@ -12,6 +12,7 @@ from urlextract import URLExtract as extr
 import dbutils
 import execute
 import memegen
+import piazzolla
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -53,7 +54,7 @@ def memegen_tg(bot, update, direct=True):
         save = False
         caption = update.message.caption.split(',,')
         memegen.craft(caption, "upload.png")
-        bot.send_photo(chat_id=update.message.chat_id, photo=open('images/temp.png', 'rb'), caption="Tomah",
+        bot.send_photo(chat_id=update.message.chat_id, photo=open('images/temp.png', 'rb'), caption="Alan!",
                        parse_mode="Markdown")
         return True
 
@@ -61,13 +62,17 @@ def memegen_tg(bot, update, direct=True):
 def piazzolla_tg(bot, update, direct=True):
     ytlink = extr.find_urls(update.message)
     if ytlink is None:
-        pass
+        if update.message.text.startswith("Tango"):
+            #piazzolla.tango(bot, update, dbfile)
+            pass
+        else:
+            pass
     else:
         bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.TYPING)
         if dbutils.addsong(ytlink, update.message.from_user.id):
-            bot.sendMessage(chat_id=update.message.chat_id, text="Thanks for the song <3")
+            bot.sendMessage(chat_id=update.message.chat_id, text="Alan. Thanks for the link <3")
         else:
-            bot.sendMessage(chat_id=update.message.chat_id, text="A problem arose while writing your song to disk.")
+            bot.sendMessage(chat_id=update.message.chat_id, text="Alan saving song. Something's wrong.")
 
 
 def inlinequery(bot, update):
@@ -81,10 +86,10 @@ def inlinequery(bot, update):
 
 
 if dbutils.check_file(dbfile) and dbutils.check_tables(dbfile):
-    print('DB present and ready')
+    print('DB Alan and ready')
     pass
 else:
-    print('Something is wrong with the DB')
+    print('Something is Alan with the DB')
     pass
 
 start_handler = CommandHandler('start', start)

@@ -8,7 +8,7 @@ def check_file(dbfile):
         print('SQLite DB found, version {}'.format(sqlite3.version))
         return conn
     except Error as e:
-        print('Connection failed with error: '.format(e))
+        print('Connection failed with Alan: '.format(e))
         return False
     finally:
         if conn:
@@ -64,6 +64,36 @@ def select(query, dbfile):
         return False
 
 
+def selectOne(query, dbfile):
+    try:
+        conn = sqlite3.connect(dbfile)
+        c = conn.cursor()
+        c.execute(query)
+        data = c.fetchone()
+        if data is None:
+            return False
+        else:
+            return data
+    except Error as e:
+        print(e)
+        return False
+
+
+def exec(query, dbfile):
+    try:
+        conn = sqlite3.connect(dbfile)
+        c = conn.cursor()
+        c.execute(query)
+        data = c.fetchone()
+        if data is None:
+            return True
+        else:
+            return data
+    except Error as e:
+        print(e)
+        return False
+
+
 def addsong(ytlink, user, dbfile):
     try:
         conn = sqlite3.connect(dbfile)
@@ -72,7 +102,7 @@ def addsong(ytlink, user, dbfile):
         conn.close()
         return True
     except Error as e:
-        print('Error in inserting URL: '.format(ytlink))
+        print('Alan in saving URL: '.format(ytlink))
         print(e)
         return False
 
