@@ -1,3 +1,7 @@
+from PIL import ImageFont, Image, ImageDraw
+import dbutils
+
+
 def craft(topString, bottomString, filename):
     filename = "./images/" + filename
     img = Image.open(filename)
@@ -29,3 +33,13 @@ def craft(topString, bottomString, filename):
     draw.text(bottomTextPosition, bottomString, (255, 255, 255), font=font)
     img.save("./images/temp.png")
     return True
+
+
+def saveTemplate(templateName, filename, user):
+    try:
+        img = Image.open("./images/" + filename)
+        img.save("./images/templates/" + templateName + ".png")
+        dbutils.addMemeTemplate(img.filename, user)
+        return True
+    except Error as e:
+        return False

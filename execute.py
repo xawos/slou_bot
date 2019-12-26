@@ -1,3 +1,5 @@
+import subprocess
+
 def bash(bot, update, direct=True):
     print("Main")
 

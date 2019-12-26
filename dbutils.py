@@ -1,3 +1,5 @@
+import sqlite3
+
 def check_file(dbfile):
     conn = None
     try:
@@ -25,27 +27,47 @@ def createdb():
         c = conn.cursor()
         c.execute('''CREATE TABLE test (name TEXT, number REAL);''')
         c.execute('''CREATE TABLE songs (id INTEGER PRIMARY KEY, url TEXT, user TEXT, datetime TEXT);''')
+        c.execute('''CREATE TABLE memes (id INTEGER PRIMARY KEY, filename TEXT, user TEXT, datetime TEXT)''')
         c.execute('''INSERT INTO test values ('A', '1');''')
         return True
     except Error as e:
+        print(e)
         return False
 
 
 def select(query):
-    c = conn.cursor()
-    c.execute(query)
-    data = c.fetchone()
-    if data is None:
-        print('DB not created')
-        createdb()
-    else:
-        pass
+    try:
+        c = conn.cursor()
+        c.execute(query)
+        data = c.fetchone()
+        if data is None:
+            print('DB not created')
+            createdb()
+            return True
+        else:
+            pass
+            return True
+    except Error as e:
+        print(e)
+        return False
 
 
 def addsong(ytlink, user):
     try:
         c = conn.cursor()
-        c.execute('''INSERT INTO test values (ytlink, user, DateTime('now'))''')
+        c.execute("INSERT INTO test values (?, ?, DateTime('now'))", (ytlink, user))
+        return True
     except Error as e:
         print('Error in inserting URL: '.format(ytlink))
+        print(e)
+        return False
 
+
+def addMemeTemplate(filename, user):
+    try:
+        c = conn.cursor()
+        c.execute("INSERT INTO memes VALUES (?, ?, DateTime('now'))", (filename, user))
+        return True
+    except Error as e:
+        print(e)
+        return False

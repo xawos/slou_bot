@@ -2,14 +2,9 @@
 # -*- coding: utf-8 -*-
 import logging
 import configparser
-import sqlite3
-import PIL
-import sys
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import InlineQueryResultArticle, ChatAction, InputTextMessageContent
-from PIL import ImageFont, Image, ImageDraw
 from uuid import uuid4
-import subprocess
 from urlextract import URLExtract as extr
 import time
 import memegen
@@ -36,7 +31,6 @@ def start(bot, update):
         bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
         time.sleep(1)
         bot.sendMessage(chat_id=update.message.chat_id, text="Welcome, guest!")
-        bot.sendMessage(chat_id=update.message.chat_id, text=update.message.from_user.id)
     else:
         bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
         time.sleep(1)
@@ -46,14 +40,20 @@ def start(bot, update):
 def memegen_tg(bot, update, direct=True):
     bot.send_chat_action(update.message.chat_id, ChatAction.UPLOAD_PHOTO)
     file_id = update.message.photo[-1]
-    caption = update.message.caption.split(',,')
     newImage = bot.get_file(file_id)
     newImage.download('./images/upload.png')
-    memegen.craft(caption[0], caption[1], "upload.png")
-    # the above function writes the image with a new filename "temp.png", we then get it and use it as "upload.png"
-    bot.send_photo(chat_id=update.message.chat_id, photo=open('images/temp.png', 'rb'), caption="Tomah",
-                   parse_mode="Markdown")
-    return True
+    if update.message.caption.find("SAVE"):
+        save=True
+        ncaption = {x.replace('SAVE', '').strip() for x in update.message.caption}
+        templateName = ', '.join(ncaption).lower().replace(" ","_")
+        memegen.saveTemplate(templateName, "upload.png", update.message.from_user)
+    else:
+        save=False
+        caption = update.message.caption.split(',,')
+        memegen.craft(caption, "upload.png")
+        bot.send_photo(chat_id=update.message.chat_id, photo=open('images/temp.png', 'rb'), caption="Tomah",
+                       parse_mode="Markdown")
+        return True
 
 
 def piazzolla_tg(bot, update, direct=True):
@@ -61,8 +61,11 @@ def piazzolla_tg(bot, update, direct=True):
     if ytlink is None:
         pass
     else:
-        dbutils.addsong(ytlink, update.message.from_user.id)
-
+        bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+        if dbutils.addsong(ytlink, update.message.from_user.id):
+            bot.sendMessage(chat_id=update.message.chat_id, text="Thanks for the song <3")
+        else:
+            bot.sendMessage(chat_id=update.message.chat_id, text="A problem arose while writing your song to disk.")
 
 def inlinequery(bot, update):
     query = update.inline_query.query
