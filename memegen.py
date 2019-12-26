@@ -35,7 +35,7 @@ def craft(topString, bottomString, filename):
     return True
 
 
-def saveTemplate(templateName, filename, user):
+def saveTemplate(templateName, filename, user, dbfile):
     try:
         img = Image.open("./images/" + filename)
         img.save("./images/templates/" + templateName + ".png")

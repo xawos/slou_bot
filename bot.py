@@ -46,7 +46,7 @@ def memegen_tg(bot, update, direct=True):
         save=True
         ncaption = {x.replace('SAVE', '').strip() for x in update.message.caption}
         templateName = ', '.join(ncaption).lower().replace(" ","_")
-        memegen.saveTemplate(templateName, "upload.png", update.message.from_user)
+        memegen.saveTemplate(templateName, "upload.png", update.message.from_user, dbfile)
     else:
         save=False
         caption = update.message.caption.split(',,')
