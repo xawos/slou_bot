@@ -63,10 +63,9 @@ def piazzolla_tg(bot, update, direct=True):
     ytlink = extr.find_urls(update.message)
     if ytlink is None:
         if update.message.text.startswith("Tango"):
-            #piazzolla.tango(bot, update, dbfile)
-            pass
-        else:
-            pass
+            piazzolla.tango(bot, update, dbfile)
+        elif update.message.text.startswith("Meme"):
+            memegen.meme(bot, update, dbfile)
     else:
         bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.TYPING)
         if dbutils.addsong(ytlink, update.message.from_user.id):
