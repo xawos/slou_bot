@@ -24,7 +24,7 @@ def gettango(bot, update, dbfile):
     try:
         if mail.isdigit():
             bot.sendMessage(chat_id=update.message.chat_id, text="Alan! Not implemented yet! Only full list for now :)")
-        else
+        else:
             query = "SELECT * FROM songs;"
             tangolist = dbutils.select(query, dbfile)
             with open("./wubbalubbadubdub.csv", "wb") as tangofile:
